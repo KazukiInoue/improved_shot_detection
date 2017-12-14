@@ -1,7 +1,7 @@
 #include "improved_shot_detection_functions.h"
 
 void testTemplateMatchingDiff() {
-	string img[2] = { "frame1.jpg", "frame2.jpg" };
+	string img[2] = { "OMV200_video00020_00072_2.602600.png", "OMV200_video00020_00077_2.769433.png" };
 
 	Frame src;
 	src.mImg = imread("../input_image/" + img[0]);
@@ -13,9 +13,11 @@ void testTemplateMatchingDiff() {
 
 	cout << img[0] << " and " << img[1] << endl;
 
+	src.calcColorDiff(ref.mImg);
+	cout << "colorDiff = " << src.mColorDiff << endl;
 
 	src.calcTemplateMatchingDiff(ref.mImg);
-	cout << "mBlockHistDiff = " << src.mBlockHistDiff << endl;
+	cout << "mTMDiff = " << src.mTMDiff << endl;
 	cv::imshow("src", src.mImg);
 	cv::imshow("ref", ref.mImg);
 

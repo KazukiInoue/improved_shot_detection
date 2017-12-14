@@ -1,12 +1,19 @@
 #pragma once
 
+#include <fstream>
+#include <iostream>
+#include <sstream>
+#include <string>
 #include <vector>
+
+#include <Windows.h>
+
 #include <opencv2/opencv.hpp>
 
 using namespace std;
 using namespace cv;
 
-void improvedShotDetection();
+void improvedShotDetection(string videoFilePath, string toDir, string fileName);
 void judgeOverThreshold(bool& is, double value, const double threshold);
 
 void exampleTemplateMatching();

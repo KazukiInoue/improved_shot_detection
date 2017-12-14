@@ -15,7 +15,7 @@ find_package(OpenCV REQUIRED)
 
 #インクルードパスの指定
 include_directories( ${OpenCV_INCLUDE_DIRS})
-add_executable(improved_shot_detection calc_block_histogram.cpp cut_detection_functions.cpp example_template_matching.cpp main.cpp improved_shot_detection.cpp test_calc_template_matching_diff.cpp)
+add_executable(improved_shot_detection calc_block_histogram.cpp cut_detection_functions.cpp example_template_matching.cpp improved_shot_detection.cpp main.cpp  test_calc_template_matching_diff.cpp)
 
 #リリース版の設定
 set(CMAKE_BUILD_TYPE Debug;Release)

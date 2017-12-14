@@ -28,7 +28,7 @@ void Frame::calcTemplateMatchingDiff(Mat prevFrame) {
 	const int blockNum = ySplitNum * xSplitNum;
 	const int blockPixels[2] = { (int)(mImg.rows / ySplitNum), (int)(mImg.cols / xSplitNum) };
 
-	const double thresholdLamda = 2000; // ‚±‚Ì’l‚ª–½
+	const double thresholdLamda = 5000; // ‚±‚Ì’l‚ª–½
 
 	for (int y = 0; y < ySplitNum; y++) {
 		for (int x = 0; x < xSplitNum; x++) {

@@ -1,5 +1,26 @@
 #include "improved_shot_detection_functions.h"
 
+
+void intValue2Name(string& name, const int value) {
+
+	if (value < 10) {
+		name = "0000" + to_string(value);
+	}
+	else if (value < 100) {
+		name = "000" + to_string(value);
+	}
+	else if (value < 1000) {
+		name = "00" + to_string(value);
+	}
+	else if (value < 10000) {
+		name = "0" + to_string(value);
+	}
+	else {
+		name = to_string(value);
+	}
+}
+
+
 void judgeOverThreshold(bool& is, double value, const double threshold) {
 	if (value > threshold) {
 		is = true;
@@ -10,7 +31,7 @@ void judgeOverThreshold(bool& is, double value, const double threshold) {
 }
 
 
-void improvedShotDetection() {
+void improvedShotDetection(string videoFilePath, string toDir, string fileName) {
 
 	const int width = 176;
 	const int height = 144;
@@ -24,8 +45,9 @@ void improvedShotDetection() {
 
 	const int keepSize = 1 + 2 * flushRange;  // 保存しておくフレームの数の総計
 
-	string videoPath = "../input_video/OMV200_video00001.mp4";
-	VideoCapture cap(videoPath);
+	const int saveIndex = 1; // ショット検出されたフレームを保存するときの名前に使用する数字
+
+	VideoCapture cap(videoFilePath);
 	if (!cap.isOpened()) {
 		std::cerr << "動画を開くことができません" << endl;
 		exit(1);
@@ -40,9 +62,19 @@ void improvedShotDetection() {
 		cv::resize(nowFrame, frameInfo[frameItr].mImg, Size(), width / (double)nowFrame.cols, height / (double)nowFrame.rows);
 	}
 
+
+
 	for (int entireItr = 0;; entireItr++) {
 
-		if (entireItr > 0) {
+		if (entireItr == 0) {
+			// 最初の1フレーム目を保存
+			string frame2Name;
+			intValue2Name(/*&*/frame2Name, entireItr + saveIndex);
+			double elapsedSec = cap.get(CAP_PROP_POS_MSEC) / 1000;
+			string outputName = toDir + fileName + "/" + fileName + "_" + frame2Name + "_" + to_string(elapsedSec) + ".png";
+			cv::imwrite(outputName, frameInfo[0].mImg);
+		}
+		else {
 			Frame aheadFrame;
 			cap >> aheadFrame.mImg;
 			if (aheadFrame.mImg.empty()) {
@@ -55,8 +87,8 @@ void improvedShotDetection() {
 			frameInfo.push_back(aheadFrame);
 		}
 
-		cv::imshow("video", frameInfo[nowIndex].mImg);
-		cv::waitKey(30);
+		//cv::imshow("video", frameInfo[nowIndex].mImg);
+		//cv::waitKey(30);
 
 		//----------カット検出----------
 		// 1.画素値の差分による検出
@@ -146,7 +178,7 @@ void improvedShotDetection() {
 
 					tmpFuture.mImg = frameInfo[nowIndex + futureItr].mImg.clone();
 
-					tmpFuture.calcTemplateMatchingDiff(frameInfo[nowIndex-1].mImg);
+					tmpFuture.calcTemplateMatchingDiff(frameInfo[nowIndex - 1].mImg);
 
 					if (tmpFuture.mTMDiff < tmpTMDiff) {
 						valueMin.mImg = tmpFuture.mImg.clone();
@@ -223,13 +255,12 @@ void improvedShotDetection() {
 
 
 				if (frameInfo[nowIndex].mIsOverFlush) {
-					// cout << "flush diff = " << pastMin.mTMDiffSum << endl;
 					cout << "pass flush" << endl;
-					//system("pause");
-					imwrite("../output_not_cvmin_kankoku/frame_" + to_string(entireItr) + ".jpg", frameInfo[nowIndex].mImg);
-					/*		cv::imwrite("../output_shot/frame_" + to_string(entireItr) + "_now" + ".jpg", frameInfo[nowIndex].mImg);
-							cv::imwrite("../output_shot/frame_" + to_string(entireItr) + "_pastMin" + ".jpg", pastMin.mImg);
-							cv::imwrite("../output_shot/frame_" + to_string(entireItr) + "_futureMin" + ".jpg", futureMin.mImg);*/
+					string frame2Name;
+					intValue2Name(/*&*/frame2Name, entireItr + saveIndex);
+					double elapsedSec = cap.get(CAP_PROP_POS_MSEC) / 1000;
+					string outputName = toDir + fileName + "/" + fileName + "_" + frame2Name + "_" + to_string(elapsedSec) + ".png";
+					cv::imwrite(outputName, frameInfo[nowIndex].mImg);
 				}
 			}
 		}
